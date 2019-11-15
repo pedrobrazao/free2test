@@ -6,6 +6,7 @@ use App\Repository\ContactRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -28,17 +29,31 @@ class ContactsController extends AbstractController
     }
 
     /**
-     * @Route("/contacts/{id}", name="api_contacts_get", methods={"GET","HEAD"})
+     * @Route("/contacts/{id<\d+>}", name="api_contacts_get", methods={"GET","HEAD"})
      * 
-     * @param string $id
+     * @param int $id
      * @return JsonResponse
+     * @throws NotFoundHttpException
      */
-    public function lookup(int $id): JsonResponse
+    public function getOne(int $id): JsonResponse
     {
         if (null === $contact  = $this->contactRepository->find($id)) {
             throw new NotFoundHttpException('Invalid contact identifier.');
         }
         
         return $this->json($contact);
+    }
+    
+    /**
+     * @Route("/contacts/search", name="api_contacts_search", methods={"GET","HEAD"})
+     * 
+     * @param string $q
+     * @return JsonResponse
+     */
+    public function search(Request $request): JsonResponse
+    {
+        $q = $request->query->get('q');
+        
+        return $this->json($this->contactRepository->search($q));
     }
 }
