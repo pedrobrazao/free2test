@@ -2,13 +2,14 @@
 
 namespace App\Controller\Api;
 
+use App\Entity\Contact;
 use App\Repository\ContactRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-
+use Symfony\Component\HttpKernel\Exception\HttpException;
 /**
  * @Route("/api")
  */
@@ -47,7 +48,7 @@ class ContactsController extends AbstractController
     /**
      * @Route("/contacts/search", name="api_contacts_search", methods={"GET","HEAD"})
      * 
-     * @param string $q
+     * @param Request $request
      * @return JsonResponse
      */
     public function search(Request $request): JsonResponse
@@ -55,5 +56,31 @@ class ContactsController extends AbstractController
         $q = $request->query->get('q');
         
         return $this->json($this->contactRepository->search($q));
+    }
+    
+    /**
+     * @Route("/contacts/search", name="api_contacts_search", methods={"GET","HEAD"})
+     * 
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function create(Request $request): JsonResponse
+    {
+        if ('application/json' !== $request->getContentType()) {
+            throw new HttpException(400, 'Content-Type header must be "application/json".');
+        }
+        
+        $data = json_decode($request->getContent(), true);
+        
+        if (false === is_array($data)) {
+            throw new HttpException(400, 'Invalid JSON body.');
+        }
+        
+        $contact = Contact::fromArray($data);
+
+        $this->getDoctrine()->getManager()->persist($contact);
+        $this->getDoctrine()->getManager()->flush();
+        
+        return $this->json($contact);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ContactRepository")
@@ -18,53 +19,94 @@ class Contact
 
     /**
      * @ORM\Column(type="string", length=10)
+     * @Assert\NotBlank
+     * @Assert\Choice({"Mr", "Mrs", "Ms"})
      */
     private $salutation;
 
     /**
      * @ORM\Column(type="string", length=1)
+     * @Assert\NotBlank
+     * @Assert\Choice({"M", "F"})
      */
     private $gender;
 
     /**
      * @ORM\Column(type="date")
+     * @Assert\NotBlank
+     * @Assert\Date
      */
     private $dob;
 
     /**
      * @ORM\Column(type="string", length=50)
+     * @Assert\NotBlank
+     * @Assert\Length(max=50)
      */
     private $firstName;
 
     /**
      * @ORM\Column(type="string", length=50)
+     * @Assert\NotBlank
+     * @Assert\Length(max=50)
      */
     private $lastName;
 
     /**
      * @ORM\Column(type="string", length=50, nullable=true)
+     * @Assert\NotBlank
+     * @Assert\Length(max=50)
      */
     private $address;
 
     /**
      * @ORM\Column(type="string", length=50)
+     * @Assert\NotBlank
+     * @Assert\Length(max=50)
      */
     private $city;
 
     /**
      * @ORM\Column(type="string", length=8)
+     * @Assert\NotBlank
+     * @Assert\Length(max=8)
      */
     private $postcode;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\Email
+     * @Assert\Length(max=255)
      */
     private $email;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank
+     * @Assert\Length(min=8, max=50)
      */
     private $password;
+
+    /**
+     * Create new instance from array.
+     * 
+     * @param array $data
+     * @return Contact
+     */
+    public static function fromArray(array $data): Contact
+    {
+        return (new Contact())
+                ->setSalutation($data['salutation'] ?? null)
+                ->setGender($data['gender'] ?? null)
+                ->setFirstName($data['firstName'] ?? null)
+                ->setLastName($data['lastName'] ?? null)
+                ->setAddress($data['address'] ?? null)
+                ->setCity($data['city'] ?? null)
+                ->setPostcode($data['postcode'] ?? null)
+                ->setEmail($data['email'] ?? null)
+                ->setPassword($data['password'] ?? null)
+        ;
+    }
 
     public function getId(): ?int
     {
