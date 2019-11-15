@@ -59,7 +59,7 @@ class ContactsController extends AbstractController
     }
     
     /**
-     * @Route("/contacts/search", name="api_contacts_search", methods={"GET","HEAD"})
+     * @Route("/contacts", name="api_contacts_create", methods={"POST"})
      * 
      * @param Request $request
      * @return JsonResponse

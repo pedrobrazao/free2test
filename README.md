@@ -15,3 +15,17 @@ Setup
 4. Run `bin/console doctrine:schema:create`.
 
 5. Run `bin/console doctrine:fixtures:load`.
+
+API Endpoints
+-------------
+
+### Postcode
+
+`GET /api/postcode/{postcode}/lookup`
+`GET /api/postcode/{postcode}/validate`
+
+### Contact
+
+`GET /api/contact/{id}`
+`GET /api/contact/search?q=`
+`POST /api/contact`
